@@ -5,12 +5,14 @@ import scala.swing.event.ButtonClicked
 import java.awt.Color
 
 object CalcMain extends SimpleSwingApplication {
-  override def top = new MainFrame {
+  // フレーム作成
+  def top = new MainFrame {
     title = "電卓"
     minimumSize = new Dimension(400, 500)
     contents = gridBagPanel
   }
   
+  // フレームの中身
   val gridBagPanel = new GridBagPanel() {
     // ボタンのテキストと表示位置
     val buttonMap = Map (
@@ -35,9 +37,10 @@ object CalcMain extends SimpleSwingApplication {
       18 -> ("=", pair2Constraints(3, 5))
     )
     
-    // ボタンの生成
+    // ボタンの設定
     val buttonArray = new Array[Button](20)
     for (buttonNum <- 0 until buttonMap.size) {
+      // ボタンの生成
       buttonArray(buttonNum) = new Button(buttonMap(buttonNum)._1) {
         buttonNum match {
           case 0 => {
@@ -46,22 +49,32 @@ object CalcMain extends SimpleSwingApplication {
           }
           case _ => preferredSize = new Dimension(100, 50)
         }
-        
+        // ボタン押下時の動作を登録
         reactions += {
-          case e: ButtonClicked => texArea.text_=(e.source.text)
+          case e: ButtonClicked => {
+            e.source.text match {
+              case "=" => {
+                val result = Calculator.calculate(textArea.text)
+                textArea.text_=(result)
+              }
+              case "AC" => textArea.text_=("")
+              case _ => textArea.text_=(textArea.text + e.source.text)
+            }
+          }
         }
       }
+      // ボタンの配置を設定
       layout += buttonArray(buttonNum) -> buttonMap(buttonNum)._2
     }
     
-    // 計算結果を表示するラベルを生成
+    // 計算結果を表示する部分を生成
     val a = pair2Constraints(0, 0)
     a.gridwidth = 4
-    val texArea = new TextArea {
+    val textArea = new TextArea {
       preferredSize = new Dimension(400, 50)
       background = Color.white
     }
-    texArea.editable_=(false)
-    layout += texArea -> a
+    textArea.editable_=(false)
+    layout += textArea -> a
   }
 }
