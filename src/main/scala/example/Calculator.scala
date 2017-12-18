@@ -14,15 +14,15 @@ object Calculator {
       // 計算開始
       while(!rpn.isEmpty) {
         val strTmp = rpn.pop()
-        if(chkSymbol(strTmp)) {
-          val topElem = tmpStack.pop().toDouble
-          val secondElem = tmpStack.pop().toDouble
+        if(strTmp.equals("+") || strTmp.equals("-") || strTmp.equals("×") || strTmp.equals("÷")) {
+          val topElem = tmpStack.pop().toFloat
+          val secondElem = tmpStack.pop().toFloat
           
           strTmp match {
-            case "+" => tmpStack.push((topElem + secondElem) toString)
-            case "-" => tmpStack.push((topElem - secondElem) toString)
-            case "×" => tmpStack.push((topElem * secondElem) toString)
-            case "÷" => tmpStack.push((topElem / secondElem) toString)
+            case "+" => tmpStack.push((secondElem + topElem) toString)
+            case "-" => tmpStack.push((secondElem - topElem) toString)
+            case "×" => tmpStack.push((secondElem * topElem) toString)
+            case "÷" => tmpStack.push((secondElem / topElem) toString)
             case _ => 
             }
         }
@@ -30,12 +30,18 @@ object Calculator {
           tmpStack.push(strTmp)
         }
       }
-      tmpStack.pop()
+      if(tmpStack.top.endsWith(".0")) {
+        tmpStack.pop().dropRight(2)
+      }
+      else {
+        tmpStack.pop()
+      }
     } catch {
         case e: Exception => "エラー"
     }
   }
   
+  // 計算式を逆ポーランド記法に並べ替える
   def convertRPN(formula: String): scala.collection.mutable.Stack[String] = {
     val tmp: StringBuffer = new StringBuffer
     val st1 = new scala.collection.mutable.Stack[String]
@@ -47,15 +53,21 @@ object Calculator {
         if ((c >= '0' && c <= '9') || c.equals('.')) {
           tmp.append(c)
         }
+        else if (c.equals('(')) {
+          st2.push(c.toString())
+        }
         else {
           if(c.equals('%')) {
-            st1.push((tmp.toString().toDouble / 100).toString())
+            st1.push((tmp.toString().toFloat / 100).toString())
             tmp.setLength(0)
           }
           else {
-            st1.push(tmp.toString())
-            tmp.setLength(0)
-            if(!st2.isEmpty) {
+            if(tmp.length() != 0) {
+              st1.push(tmp.toString())
+              tmp.setLength(0)
+            }
+            if(!st2.isEmpty && !st2.top.equals("(")) {
+              // 計算優先度を比較
               if((c.equals('×') || c.equals('÷')) &&
                   (st2.top.equals('+') || st2.top.equals('-'))) {
                 st2.push(c.toString())
@@ -63,6 +75,9 @@ object Calculator {
               else {
                 st1.push(st2.pop())
               }
+            }
+            if(c.equals(')')) {
+              st2.pop()
             }
             else {
               st2.push(c.toString())
@@ -81,15 +96,5 @@ object Calculator {
     }
     
     st2
-  }
-  
-  // 演算子かどうか判定
-  def chkSymbol(str: String): Boolean = {
-    if (str.equals("+") || str.equals("-") || str.equals("×") || str.equals("÷")) {
-      true
-    }
-    else {
-      false
-    }
   }
 }
