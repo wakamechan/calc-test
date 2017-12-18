@@ -69,25 +69,6 @@ object Calculator {
             }
           }
         }
-//        else if(c.equals('+') || c.equals('-') || c.equals('×') || c.equals('÷')) {
-//          if(tmp.length() != 0) {
-//            // 退避させた文字をスタックにpush
-//            st1.push(tmp.toString())
-//            tmp.setLength(0)
-//          }
-//          if(!st2.isEmpty) {
-//            if((c.equals('×') || c.equals('÷')) &&
-//                (st2.top.equals('+') || st2.top.equals('-'))) {
-//              st2.push(c.toString())
-//            }
-//            else {
-//              st1.push(st2.pop())
-//            }
-//          }
-//          else {
-//            st2.push(c.toString())
-//          }
-//        }
     )
     
     if (tmp.length() != 0) {
