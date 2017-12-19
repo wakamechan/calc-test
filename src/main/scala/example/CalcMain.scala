@@ -39,7 +39,7 @@ object CalcMain extends SimpleSwingApplication {
     )
     
     // ボタンの設定
-    val buttonArray = new Array[Button](20)
+    val buttonArray = new Array[Button](buttonMap.size)
     for (buttonNum <- 0 until buttonMap.size) {
       // ボタンの生成
       buttonArray(buttonNum) = new Button(buttonMap(buttonNum)._1) {
